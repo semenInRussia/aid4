@@ -1,0 +1,467 @@
+=== (а) createTask сохраняет пробелы по краям ===
+> test
+> vitest run
+
+
+ RUN  v5.0.5 /private/var/folders/wl/1342_px560j8fybxvzqmx5y80000gn/T/taskboard-red-0bqy0y45
+
+ ❯ src/tasks.test.ts (6 tests | 1 failed) 5ms
+   ❯ базовая доска (3)
+     × создаёт задачу и обрезает название 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/tasks.test.ts > базовая доска > создаёт задачу и обрезает название
+AssertionError: expected '  Купить хлеб  ' to be 'Купить хлеб' // Object.is equality
+
+Expected: "Купить хлеб"
+Received: "  Купить хлеб  "
+
+ ❯ src/tasks.test.ts:13:29
+     11|     it("создаёт задачу и обрезает название", () => {
+     12|         const task = createTask(9, "  Купить хлеб  ");
+     13|         expect(task?.title).toBe("Купить хлеб");
+       |                             ^
+     14|     });
+     15|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  17:57:33
+   Duration  186ms (transform 52%, import 20%, tests 19%, worker 8%)
+Код выхода: 1
+
+=== (б) renameTask принимает пустое название ===
+> test
+> vitest run
+
+
+ RUN  v5.0.5 /private/var/folders/wl/1342_px560j8fybxvzqmx5y80000gn/T/taskboard-red-0bqy0y45
+
+ ❯ src/tasks.test.ts (6 tests | 1 failed) 6ms
+   ❯ пустые названия задач (3)
+     × сохраняет прежнее название при попытке переименовать задачу в пустую строку 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/tasks.test.ts > пустые названия задач > сохраняет прежнее название при попытке переименовать задачу в пустую строку
+AssertionError: expected [ { id: 9, title: '', done: false } ] to deeply equal [ { id: 9, …(2) } ]
+
+- Expected
++ Received
+
+  [
+    {
+      "done": false,
+      "id": 9,
+-     "title": "Сходить в зал",
++     "title": "",
+    },
+  ]
+
+ ❯ src/tasks.test.ts:29:49
+     27|         const task = createTask(9, "Сходить в зал")!;
+     28|
+     29|         expect(renameTask([task], task.id, "")).toEqual([
+       |                                                 ^
+     30|             { id: 9, title: "Сходить в зал", done: false },
+     31|         ]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  17:57:33
+   Duration  175ms (transform 44%, tests 25%, import 23%, worker 8%)
+Код выхода: 1
+
+=== (в) visibleTasks показывает унаследованную пустую строку ===
+> test
+> vitest run
+
+
+ RUN  v5.0.5 /private/var/folders/wl/1342_px560j8fybxvzqmx5y80000gn/T/taskboard-red-0bqy0y45
+
+ ❯ src/tasks.test.ts (6 tests | 2 failed) 6ms
+   ❯ пустые названия задач (3)
+     × скрывает задачи с пустыми и пробельными названиями 3ms
+     × считает только открытые задачи с непустыми названиями 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/tasks.test.ts > пустые названия задач > скрывает задачи с пустыми и пробельными названиями
+AssertionError: expected [ '', '\t ', ' ', 'Buy milk' ] to deeply equal [ 'Buy milk' ]
+
+- Expected
++ Received
+
+  [
++   "",
++   "	 ",
++   " ",
+    "Buy milk",
+  ]
+
+ ❯ src/tasks.test.ts:41:70
+     39|         }));
+     40|
+     41|         expect(visibleTasks(tasks, "all").map((task) => task.title)).t…
+       |                                                                      ^
+     42|             "Buy milk",
+     43|         ]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/tasks.test.ts > пустые названия задач > считает только открытые задачи с непустыми названиями
+AssertionError: expected 5 to be 2 // Object.is equality
+
+- Expected
++ Received
+
+- 2
++ 5
+
+ ❯ src/tasks.test.ts:59:34
+     57|         }));
+     58|
+     59|         expect(openCount(tasks)).toBe(2);
+       |                                  ^
+     60|     });
+     61| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 4 passed (6)
+   Start at  17:57:34
+   Duration  175ms (transform 45%, tests 24%, import 22%, worker 9%)
+Код выхода: 1
+
+=== (г) U+200B до исправления ===
+Временный тест src/blank-title.check.test.ts:
+import { expect, it } from "vitest"
+import { createTask, openCount, renameTask, visibleTasks } from "./tasks"
+
+it("считает U+200B и смесь U+200B, табуляции и NBSP пустым названием", () => {
+    const task = { id: 1, title: "Купить хлеб", done: false }
+    for (const blank of ["\u200B", "\t\u200B\u00A0"]) {
+        const saved = [task, { id: 2, title: blank, done: false }]
+        expect.soft(createTask(2, blank)).toBeUndefined()
+        expect.soft(renameTask([task], 1, blank)).toEqual([task])
+        expect.soft(visibleTasks(saved, "all")).toEqual([task])
+        expect.soft(openCount(saved)).toBe(1)
+    }
+    expect(renameTask([task], 1, "\tНовое имя\u00A0")[0].title).toBe("Новое имя")
+    expect(createTask(2, "слово\u200Bслово")?.title).toBe("слово\u200Bслово")
+})
+> test
+> vitest run
+
+
+ RUN  v5.0.5 /private/var/folders/wl/1342_px560j8fybxvzqmx5y80000gn/T/taskboard-variant-1hj1x8ff
+
+ ❯ src/blank-title.check.test.ts (1 test | 1 failed) 8ms
+   × считает U+200B и смесь U+200B, табуляции и NBSP пустым названием 7ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/blank-title.check.test.ts > считает U+200B и смесь U+200B, табуляции и NBSP пустым названием
+ FAIL  src/blank-title.check.test.ts > считает U+200B и смесь U+200B, табуляции и NBSP пустым названием
+AssertionError: expected { id: 2, title: '​', done: false } to be undefined
+
+- Expected:
+undefined
+
++ Received:
+{
+  "done": false,
+  "id": 2,
+  "title": "​",
+}
+
+ ❯ src/blank-title.check.test.ts:8:43
+      6|     for (const blank of ["\u200B", "\t\u200B\u00A0"]) {
+      7|         const saved = [task, { id: 2, title: blank, done: false }]
+      8|         expect.soft(createTask(2, blank)).toBeUndefined()
+       |                                           ^
+      9|         expect.soft(renameTask([task], 1, blank)).toEqual([task])
+     10|         expect.soft(visibleTasks(saved, "all")).toEqual([task])
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  src/blank-title.check.test.ts > считает U+200B и смесь U+200B, табуляции и NBSP пустым названием
+ FAIL  src/blank-title.check.test.ts > считает U+200B и смесь U+200B, табуляции и NBSP пустым названием
+AssertionError: expected [ { id: 1, title: '​', done: false } ] to deeply equal [ { id: 1, …(2) } ]
+
+- Expected
++ Received
+
+  [
+    {
+      "done": false,
+      "id": 1,
+-     "title": "Купить хлеб",
++     "title": "​",
+    },
+  ]
+
+ ❯ src/blank-title.check.test.ts:9:51
+      7|         const saved = [task, { id: 2, title: blank, done: false }]
+      8|         expect.soft(createTask(2, blank)).toBeUndefined()
+      9|         expect.soft(renameTask([task], 1, blank)).toEqual([task])
+       |                                                   ^
+     10|         expect.soft(visibleTasks(saved, "all")).toEqual([task])
+     11|         expect.soft(openCount(saved)).toBe(1)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  src/blank-title.check.test.ts > считает U+200B и смесь U+200B, табуляции и NBSP пустым названием
+AssertionError: expected [ { id: 1, …(2) }, …(1) ] to deeply equal [ { id: 1, …(2) } ]
+
+- Expected
++ Received
+
+@@ -2,6 +2,11 @@
+    {
+      "done": false,
+      "id": 1,
+      "title": "Купить хлеб",
+    },
++   {
++     "done": false,
++     "id": 2,
++     "title": "​",
++   },
+  ]
+
+ ❯ src/blank-title.check.test.ts:10:49
+      8|         expect.soft(createTask(2, blank)).toBeUndefined()
+      9|         expect.soft(renameTask([task], 1, blank)).toEqual([task])
+     10|         expect.soft(visibleTasks(saved, "all")).toEqual([task])
+       |                                                 ^
+     11|         expect.soft(openCount(saved)).toBe(1)
+     12|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  src/blank-title.check.test.ts > считает U+200B и смесь U+200B, табуляции и NBSP пустым названием
+ FAIL  src/blank-title.check.test.ts > считает U+200B и смесь U+200B, табуляции и NBSP пустым названием
+AssertionError: expected 2 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ src/blank-title.check.test.ts:11:39
+      9|         expect.soft(renameTask([task], 1, blank)).toEqual([task])
+     10|         expect.soft(visibleTasks(saved, "all")).toEqual([task])
+     11|         expect.soft(openCount(saved)).toBe(1)
+       |                                       ^
+     12|     }
+     13|     expect(renameTask([task], 1, "\tНовое имя\u00A0")[0].title).toBe("…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  src/blank-title.check.test.ts > считает U+200B и смесь U+200B, табуляции и NBSP пустым названием
+AssertionError: expected [ { id: 1, …(2) }, …(1) ] to deeply equal [ { id: 1, …(2) } ]
+
+- Expected
++ Received
+
+@@ -2,6 +2,11 @@
+    {
+      "done": false,
+      "id": 1,
+      "title": "Купить хлеб",
+    },
++   {
++     "done": false,
++     "id": 2,
++     "title": "	​ ",
++   },
+  ]
+
+ ❯ src/blank-title.check.test.ts:10:49
+      8|         expect.soft(createTask(2, blank)).toBeUndefined()
+      9|         expect.soft(renameTask([task], 1, blank)).toEqual([task])
+     10|         expect.soft(visibleTasks(saved, "all")).toEqual([task])
+       |                                                 ^
+     11|         expect.soft(openCount(saved)).toBe(1)
+     12|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 6 passed (7)
+   Start at  17:58:06
+   Duration  206ms (transform 54%, import 20%, tests 18%, worker 8%)
+Код выхода: 1
+
+=== Контроль после исправления U+200B ===
+> test
+> vitest run
+
+
+ RUN  v5.0.5 /private/var/folders/wl/1342_px560j8fybxvzqmx5y80000gn/T/taskboard-variant-bd4zhcc7
+
+
+ Test Files  2 passed (2)
+      Tests  7 passed (7)
+   Start at  17:58:13
+   Duration  177ms (transform 59%, import 23%, tests 9%, worker 9%)
+Код выхода: 0
+
+=== Повтор (г) после возврата проверки на String.trim() ===
+> test
+> vitest run
+
+
+ RUN  v5.0.5 /private/var/folders/wl/1342_px560j8fybxvzqmx5y80000gn/T/taskboard-variant-qsuznika
+
+ ❯ src/blank-title.check.test.ts (1 test | 1 failed) 9ms
+   × считает U+200B и смесь U+200B, табуляции и NBSP пустым названием 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/blank-title.check.test.ts > считает U+200B и смесь U+200B, табуляции и NBSP пустым названием
+ FAIL  src/blank-title.check.test.ts > считает U+200B и смесь U+200B, табуляции и NBSP пустым названием
+AssertionError: expected { id: 2, title: '​', done: false } to be undefined
+
+- Expected:
+undefined
+
++ Received:
+{
+  "done": false,
+  "id": 2,
+  "title": "​",
+}
+
+ ❯ src/blank-title.check.test.ts:8:43
+      6|     for (const blank of ["\u200B", "\t\u200B\u00A0"]) {
+      7|         const saved = [task, { id: 2, title: blank, done: false }]
+      8|         expect.soft(createTask(2, blank)).toBeUndefined()
+       |                                           ^
+      9|         expect.soft(renameTask([task], 1, blank)).toEqual([task])
+     10|         expect.soft(visibleTasks(saved, "all")).toEqual([task])
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  src/blank-title.check.test.ts > считает U+200B и смесь U+200B, табуляции и NBSP пустым названием
+ FAIL  src/blank-title.check.test.ts > считает U+200B и смесь U+200B, табуляции и NBSP пустым названием
+AssertionError: expected [ { id: 1, title: '​', done: false } ] to deeply equal [ { id: 1, …(2) } ]
+
+- Expected
++ Received
+
+  [
+    {
+      "done": false,
+      "id": 1,
+-     "title": "Купить хлеб",
++     "title": "​",
+    },
+  ]
+
+ ❯ src/blank-title.check.test.ts:9:51
+      7|         const saved = [task, { id: 2, title: blank, done: false }]
+      8|         expect.soft(createTask(2, blank)).toBeUndefined()
+      9|         expect.soft(renameTask([task], 1, blank)).toEqual([task])
+       |                                                   ^
+     10|         expect.soft(visibleTasks(saved, "all")).toEqual([task])
+     11|         expect.soft(openCount(saved)).toBe(1)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  src/blank-title.check.test.ts > считает U+200B и смесь U+200B, табуляции и NBSP пустым названием
+AssertionError: expected [ { id: 1, …(2) }, …(1) ] to deeply equal [ { id: 1, …(2) } ]
+
+- Expected
++ Received
+
+@@ -2,6 +2,11 @@
+    {
+      "done": false,
+      "id": 1,
+      "title": "Купить хлеб",
+    },
++   {
++     "done": false,
++     "id": 2,
++     "title": "​",
++   },
+  ]
+
+ ❯ src/blank-title.check.test.ts:10:49
+      8|         expect.soft(createTask(2, blank)).toBeUndefined()
+      9|         expect.soft(renameTask([task], 1, blank)).toEqual([task])
+     10|         expect.soft(visibleTasks(saved, "all")).toEqual([task])
+       |                                                 ^
+     11|         expect.soft(openCount(saved)).toBe(1)
+     12|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  src/blank-title.check.test.ts > считает U+200B и смесь U+200B, табуляции и NBSP пустым названием
+ FAIL  src/blank-title.check.test.ts > считает U+200B и смесь U+200B, табуляции и NBSP пустым названием
+AssertionError: expected 2 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ src/blank-title.check.test.ts:11:39
+      9|         expect.soft(renameTask([task], 1, blank)).toEqual([task])
+     10|         expect.soft(visibleTasks(saved, "all")).toEqual([task])
+     11|         expect.soft(openCount(saved)).toBe(1)
+       |                                       ^
+     12|     }
+     13|     expect(renameTask([task], 1, "\tНовое имя\u00A0")[0].title).toBe("…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  src/blank-title.check.test.ts > считает U+200B и смесь U+200B, табуляции и NBSP пустым названием
+AssertionError: expected [ { id: 1, …(2) }, …(1) ] to deeply equal [ { id: 1, …(2) } ]
+
+- Expected
++ Received
+
+@@ -2,6 +2,11 @@
+    {
+      "done": false,
+      "id": 1,
+      "title": "Купить хлеб",
+    },
++   {
++     "done": false,
++     "id": 2,
++     "title": "	​ ",
++   },
+  ]
+
+ ❯ src/blank-title.check.test.ts:10:49
+      8|         expect.soft(createTask(2, blank)).toBeUndefined()
+      9|         expect.soft(renameTask([task], 1, blank)).toEqual([task])
+     10|         expect.soft(visibleTasks(saved, "all")).toEqual([task])
+       |                                                 ^
+     11|         expect.soft(openCount(saved)).toBe(1)
+     12|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 6 passed (7)
+   Start at  17:58:14
+   Duration  251ms (transform 51%, import 21%, tests 14%, worker 14%)
+Код выхода: 1
